@@ -3,7 +3,6 @@ import Foundation
 final class ProductViewModel: ObservableObject {
     @Published var products: [Product] = []
     @Published var errorMessage: String? = nil
-    @Published var isLoading: Bool = false
     
     private var currentPage = 1
     private let productService: ProductServiceProtocol
@@ -22,17 +21,13 @@ final class ProductViewModel: ObservableObject {
             errorMessage = nil 
         }
 
-        isLoading = true
-
         task = Task {
             do {
                 let newProducts = try await productService.fetchProducts(page: currentPage)
                 self.products.append(contentsOf: newProducts)
                 self.currentPage += 1
-                self.isLoading = false
             } catch {
                 self.errorMessage = "Ошибка загрузки данных. Попробуйте снова."
-                self.isLoading = false
             }
         }
     }
